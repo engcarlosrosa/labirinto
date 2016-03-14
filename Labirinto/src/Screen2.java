@@ -22,7 +22,9 @@ public class Screen2 extends JPanel implements  ActionListener, KeyListener {
 	public static int getCellSize() {
 		return CELL_SIZE;
 	}
-
+	
+	private Timer timer;
+	
 	private int width;
 	private int height;
 	
@@ -32,6 +34,9 @@ public class Screen2 extends JPanel implements  ActionListener, KeyListener {
 	private int yUser;
 	private int xMazeRunner;
 	private int yMazeRunner;
+	
+	private int xObjetivo;
+	private int yObjetivo;
 
 	protected Image imageBatman;
 	protected Image imageBane;
@@ -48,6 +53,9 @@ public class Screen2 extends JPanel implements  ActionListener, KeyListener {
 		this.width = this.labyrinth[0].length;
 		this.height = this.labyrinth.length;
 		
+		this.xObjetivo = width - 1;
+		this.yObjetivo = height - 1;
+		
 		xUser = CELL_SIZE;
 		yUser = CELL_SIZE;
 		
@@ -59,7 +67,7 @@ public class Screen2 extends JPanel implements  ActionListener, KeyListener {
 		imageBatman = new ImageIcon(getClass().getResource("/BATMAN.png")).getImage();
 		imageBane = new ImageIcon(getClass().getResource("/BanePXL.png")).getImage();
 		
-		Timer timer = new Timer(100, this);
+		timer = new Timer(1, this);
 		timer.start();
 	}
 
@@ -82,55 +90,63 @@ public class Screen2 extends JPanel implements  ActionListener, KeyListener {
 		xMazeRunner = path.peek().getX()*CELL_SIZE;
 		yMazeRunner = path.peek().getY()*CELL_SIZE;
 		
+		g.setColor(Color.BLUE);
+		g.fillRect(xObjetivo*CELL_SIZE, yObjetivo*CELL_SIZE, CELL_SIZE, CELL_SIZE);
+		
 		g.drawImage(imageBatman, xUser, yUser,CELL_SIZE,CELL_SIZE, null);
 		g.drawImage(imageBane, xMazeRunner, yMazeRunner,CELL_SIZE,CELL_SIZE, null);
     	getToolkit().sync();
     }
 	
 	public void actionPerformed(ActionEvent e) {
-		Crumb crumb = path.peek();
-		int x = crumb.getX();
-		int y = crumb.getY();
-		labyrinth[y][x] = false;
-		switch(crumb.getPasses()){
-		case 0:
-			if(x-1 >= 0){
-				if(labyrinth[y][x-1]){
-					path.add(new Crumb(x-1,y));
+		if((xMazeRunner/CELL_SIZE) != xObjetivo || (yMazeRunner/CELL_SIZE) != yObjetivo){
+			Crumb crumb = path.peek();
+			int x = crumb.getX();
+			int y = crumb.getY();
+			labyrinth[y][x] = false;
+			switch(crumb.getPasses()){
+			case 0:
+				if(x-1 >= 0){
+					if(labyrinth[y][x-1]){
+						path.add(new Crumb(x-1,y));
+					}
 				}
-			}
-			crumb.addPass();
-			break;
-		case 1:
-			if(y-1 >= 0){
-				if(labyrinth[y-1][x]){
-					path.add(new Crumb(x,y-1));
+				crumb.addPass();
+				break;
+			case 1:
+				if(y-1 >= 0){
+					if(labyrinth[y-1][x]){
+						path.add(new Crumb(x,y-1));
+					}
 				}
-			}
-			crumb.addPass();
-			break;
-		case 2:
-			if(x+1 < width){
-				if(labyrinth[y][x+1]){
-					path.add(new Crumb(x+1,y));
+				crumb.addPass();
+				break;
+			case 2:
+				if(x+1 < width){
+					if(labyrinth[y][x+1]){
+						path.add(new Crumb(x+1,y));
+					}
 				}
-			}
-			crumb.addPass();
-			break;
-		case 3:
-			if(y+1 < height){
-				if(labyrinth[y+1][x]){
-					path.add(new Crumb(x,y+1));
+				crumb.addPass();
+				break;
+			case 3:
+				if(y+1 < height){
+					if(labyrinth[y+1][x]){
+						path.add(new Crumb(x,y+1));
+					}
 				}
+				crumb.addPass();
+				break;
+			case 4:
+				path.pop();
+				break;
 			}
-			crumb.addPass();
-			break;
-		case 4:
-			path.pop();
-			break;
+			
+			repaint();
 		}
-		
-		repaint();
+		else{
+			timer.stop();
+		}
 	}
 	
 	@Override
@@ -141,7 +157,7 @@ public class Screen2 extends JPanel implements  ActionListener, KeyListener {
     		if(xUser == 0) {
     			xUser = 0;
     		}
-    		if(labyrinth[yUser/CELL_SIZE][(xUser/CELL_SIZE)-1]){
+    		else if(labyrinth[yUser/CELL_SIZE][(xUser/CELL_SIZE)-1]){
         		xUser = xUser - CELL_SIZE;
     		}
     		repaint();
@@ -151,7 +167,7 @@ public class Screen2 extends JPanel implements  ActionListener, KeyListener {
     		if(xUser == (this.width-1)*CELL_SIZE) {
     			xUser = (this.width-1)*CELL_SIZE;
     		}
-    		if(labyrinth[yUser/CELL_SIZE][(xUser/CELL_SIZE)+1]){
+    		else if(labyrinth[yUser/CELL_SIZE][(xUser/CELL_SIZE)+1]){
     		xUser = xUser + CELL_SIZE;
     		}
     		repaint();
@@ -162,7 +178,7 @@ public class Screen2 extends JPanel implements  ActionListener, KeyListener {
     		if(yUser == 0){
     			yUser = 0;
     		}
-    		if(labyrinth[(yUser/CELL_SIZE)-1][xUser/CELL_SIZE]){
+    		else if(labyrinth[(yUser/CELL_SIZE)-1][xUser/CELL_SIZE]){
     		yUser = yUser - CELL_SIZE;
     		}
     		repaint();
@@ -172,7 +188,7 @@ public class Screen2 extends JPanel implements  ActionListener, KeyListener {
     		if(yUser == (this.height-1)*CELL_SIZE){
     			yUser = (this.height-1)*CELL_SIZE;
     		}
-    		if(labyrinth[(yUser/CELL_SIZE)+1][xUser/CELL_SIZE]){
+    		else if(labyrinth[(yUser/CELL_SIZE)+1][xUser/CELL_SIZE]){
     		yUser = yUser + CELL_SIZE;
     		}
     		repaint();
