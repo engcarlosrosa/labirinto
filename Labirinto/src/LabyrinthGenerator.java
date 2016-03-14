@@ -31,7 +31,7 @@ public class LabyrinthGenerator {
 			for(j = 0; j < WIDTH - 1; j++) {
 				edges[k] = new Edge(cells[i][j], cells[i][j + 1]);
 				k++;
-			}			
+			}
 		}
 
 		for(i = 0; i < HEIGHT - 1; i++) {
@@ -90,7 +90,6 @@ public class LabyrinthGenerator {
 		}
 
 		PrintWriter writer = new PrintWriter(new OutputStreamWriter(stream, charset));
-
 		for(i = 0; i < labyrinth.length; i++) {
 			for(j = 0; j < labyrinth[0].length; j++) {
 				if(labyrinth[i][j]) {
@@ -108,7 +107,7 @@ public class LabyrinthGenerator {
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 Screen2 screen = new Screen2(labyrinth);
-
+                
                 JFrame frame = new JFrame("Labyrinth Generator");
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 frame.setResizable(false);

@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.Stack;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
@@ -18,17 +19,28 @@ public class Screen2 extends JPanel implements  ActionListener, KeyListener {
 
 	private final static int CELL_SIZE = 25;
 
+	public static int getCellSize() {
+		return CELL_SIZE;
+	}
+
 	private int width;
 	private int height;
 	
-	public int x_bloco;
-	public int y_bloco;
-	public int x_bloco_azul;
+	private Stack<Crumb> path = new Stack<>();
 	
-	protected Image image;
+	private int xUser;
+	private int yUser;
+	private int xMazeRunner;
+	private int yMazeRunner;
+
+	protected Image imageBatman;
+	protected Image imageBane;
 	
 	private boolean[][] labyrinth;
 	
+	public boolean[][] getLabyrinth(){
+		return labyrinth;
+	}
 
 	public Screen2(boolean[][] labyrinth) {
 		this.labyrinth = labyrinth;
@@ -36,17 +48,18 @@ public class Screen2 extends JPanel implements  ActionListener, KeyListener {
 		this.width = this.labyrinth[0].length;
 		this.height = this.labyrinth.length;
 		
-		x_bloco = 25;
-		y_bloco = 25;
-		x_bloco_azul = 50;
+		xUser = CELL_SIZE;
+		yUser = CELL_SIZE;
+		
+		Crumb crumb = new Crumb(0,0);
+		path.add(crumb);
 
 		setPreferredSize(new Dimension(this.width * CELL_SIZE, this.height * CELL_SIZE));
 		
-		image = new ImageIcon(getClass().getResource("/BATMAN.png")).getImage();
+		imageBatman = new ImageIcon(getClass().getResource("/BATMAN.png")).getImage();
+		imageBane = new ImageIcon(getClass().getResource("/BanePXL.png")).getImage();
 		
-		Timer timer = new Timer(1000, this);
-
-		// Iniciamos o relógio.
+		Timer timer = new Timer(100, this);
 		timer.start();
 	}
 
@@ -66,66 +79,102 @@ public class Screen2 extends JPanel implements  ActionListener, KeyListener {
 				g.fillRect(x, y, CELL_SIZE, CELL_SIZE);
 			}
 		}
+		xMazeRunner = path.peek().getX()*CELL_SIZE;
+		yMazeRunner = path.peek().getY()*CELL_SIZE;
 		
-		g.drawImage(image, x_bloco, y_bloco,CELL_SIZE,CELL_SIZE, null);
-		
-		g.setColor(Color.BLUE);
-		g.fillRect(x_bloco_azul, y_bloco, CELL_SIZE, CELL_SIZE);
-		
+		g.drawImage(imageBatman, xUser, yUser,CELL_SIZE,CELL_SIZE, null);
+		g.drawImage(imageBane, xMazeRunner, yMazeRunner,CELL_SIZE,CELL_SIZE, null);
     	getToolkit().sync();
     }
 	
 	public void actionPerformed(ActionEvent e) {
-
-		// Se o quadrado está à esquerda...
-		if(x_bloco_azul == 50) {
-			// ...movemos para a direita!
-			x_bloco_azul = 75;
+		Crumb crumb = path.peek();
+		int x = crumb.getX();
+		int y = crumb.getY();
+		labyrinth[y][x] = false;
+		switch(crumb.getPasses()){
+		case 0:
+			if(x-1 >= 0){
+				if(labyrinth[y][x-1]){
+					path.add(new Crumb(x-1,y));
+				}
+			}
+			crumb.addPass();
+			break;
+		case 1:
+			if(y-1 >= 0){
+				if(labyrinth[y-1][x]){
+					path.add(new Crumb(x,y-1));
+				}
+			}
+			crumb.addPass();
+			break;
+		case 2:
+			if(x+1 < width){
+				if(labyrinth[y][x+1]){
+					path.add(new Crumb(x+1,y));
+				}
+			}
+			crumb.addPass();
+			break;
+		case 3:
+			if(y+1 < height){
+				if(labyrinth[y+1][x]){
+					path.add(new Crumb(x,y+1));
+				}
+			}
+			crumb.addPass();
+			break;
+		case 4:
+			path.pop();
+			break;
 		}
-
-		// Se o quadrado está à direita...
-		else {
-			// ...movemos para a esquerda!
-			x_bloco_azul = 50;
-		}
-
-		// De uma forma ou de outra o quadrado se moveu,
-		// então sempre precisamos redesenhar a tela!
+		
 		repaint();
 	}
 	
-    @Override
+	@Override
 	public void keyPressed(KeyEvent e) {
     	int key = e.getKeyCode();
-
-    	// Se a tecla apertada foi a seta para a esquerda...
+    	
     	if(key == KeyEvent.VK_LEFT) {
-    		// ...movemos o boneco para a esquerda...
-    		x_bloco = x_bloco - 25;
-    		//System.out.println("left");
-    		// ...e redesenhamos a tela.
+    		if(xUser == 0) {
+    			xUser = 0;
+    		}
+    		if(labyrinth[yUser/CELL_SIZE][(xUser/CELL_SIZE)-1]){
+        		xUser = xUser - CELL_SIZE;
+    		}
     		repaint();
     	}
-
-    	// Se a tecla apertada foi a seta para a direita...
+    	
     	if(key == KeyEvent.VK_RIGHT) {
-    		// ...movemos o boneco para a direita!
-    		x_bloco = x_bloco + 25;
-    		// ...e redesenhamos a tela.
+    		if(xUser == (this.width-1)*CELL_SIZE) {
+    			xUser = (this.width-1)*CELL_SIZE;
+    		}
+    		if(labyrinth[yUser/CELL_SIZE][(xUser/CELL_SIZE)+1]){
+    		xUser = xUser + CELL_SIZE;
+    		}
     		repaint();
+
+    		
     	}
-    	
     	if(key == KeyEvent.VK_UP) {
-    		// ...movemos o boneco para a direita!
-    		y_bloco = y_bloco - 25;
-    		// ...e redesenhamos a tela.
+    		if(yUser == 0){
+    			yUser = 0;
+    		}
+    		if(labyrinth[(yUser/CELL_SIZE)-1][xUser/CELL_SIZE]){
+    		yUser = yUser - CELL_SIZE;
+    		}
     		repaint();
+
     	}
-    	
     	if(key == KeyEvent.VK_DOWN) {
-    		// ...movemos o boneco para a direita!
-    		y_bloco = y_bloco + 25;
-    		// ...e redesenhamos a tela.
+    		if(yUser == (this.height-1)*CELL_SIZE){
+    			yUser = (this.height-1)*CELL_SIZE;
+    		}
+    		if(labyrinth[(yUser/CELL_SIZE)+1][xUser/CELL_SIZE]){
+    		yUser = yUser + CELL_SIZE;
+    		}
     		repaint();
     	}
 	}
