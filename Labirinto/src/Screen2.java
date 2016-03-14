@@ -27,8 +27,19 @@ public class Screen2 extends JPanel implements  ActionListener, KeyListener {
 	
 	private int width;
 	private int height;
+
 	
+<<<<<<< HEAD
 	private Stack<Crumb> path = new Stack<>();
+=======
+	public int x_bloco;
+	public int y_bloco;
+	public int x_bloco_azul;
+	public int xLimiteRight;
+	public int xLimiteLeft;
+	public int yLimiteDown;
+	public int yLimiteUp;
+>>>>>>> 37d5f2172c7f29a468c49a1c2d2f0085a980db9d
 	
 	private int xUser;
 	private int yUser;
@@ -53,6 +64,7 @@ public class Screen2 extends JPanel implements  ActionListener, KeyListener {
 		this.width = this.labyrinth[0].length;
 		this.height = this.labyrinth.length;
 		
+<<<<<<< HEAD
 		this.xObjetivo = width - 1;
 		this.yObjetivo = height - 1;
 		
@@ -61,6 +73,16 @@ public class Screen2 extends JPanel implements  ActionListener, KeyListener {
 		
 		Crumb crumb = new Crumb(0,0);
 		path.add(crumb);
+=======
+		x_bloco = 25;
+		y_bloco = 25;
+		x_bloco_azul = 50;
+		xLimiteRight = this.width-x_bloco;
+		xLimiteLeft = x_bloco;
+		yLimiteDown = y_bloco;
+		yLimiteUp = this.width-y_bloco;
+		
+>>>>>>> 37d5f2172c7f29a468c49a1c2d2f0085a980db9d
 
 		setPreferredSize(new Dimension(this.width * CELL_SIZE, this.height * CELL_SIZE));
 		
@@ -154,26 +176,52 @@ public class Screen2 extends JPanel implements  ActionListener, KeyListener {
     	int key = e.getKeyCode();
     	
     	if(key == KeyEvent.VK_LEFT) {
+<<<<<<< HEAD
     		if(xUser == 0) {
     			xUser = 0;
     		}
     		else if(labyrinth[yUser/CELL_SIZE][(xUser/CELL_SIZE)-1]){
         		xUser = xUser - CELL_SIZE;
     		}
+=======
+    		//...e o limite esquerdo for atingido, mantemos o boneco..
+    		if(x_bloco == xLimiteLeft - CELL_SIZE) {
+    			x_bloco = xLimiteLeft - CELL_SIZE;
+    		}
+    		// ... do contrario, movemos o boneco para a esquerda...
+    		else{
+    		x_bloco = x_bloco - CELL_SIZE;
+    		}
+    		//System.out.println("left");
+    		// ...e redesenhamos a tela.
+>>>>>>> 37d5f2172c7f29a468c49a1c2d2f0085a980db9d
     		repaint();
     	}
     	
     	if(key == KeyEvent.VK_RIGHT) {
+<<<<<<< HEAD
     		if(xUser == (this.width-1)*CELL_SIZE) {
     			xUser = (this.width-1)*CELL_SIZE;
     		}
     		else if(labyrinth[yUser/CELL_SIZE][(xUser/CELL_SIZE)+1]){
     		xUser = xUser + CELL_SIZE;
     		}
+=======
+    		//...e o limite direito for atingido, mantemos o boneco..
+    		if(x_bloco == 950) {
+    			x_bloco = 950;
+    		}
+    		// ...do contrario, movemos o boneco para a direita!
+    		else{
+    		x_bloco = x_bloco + CELL_SIZE;
+    		}
+    		// ...e redesenhamos a tela.
+>>>>>>> 37d5f2172c7f29a468c49a1c2d2f0085a980db9d
     		repaint();
 
     		
     	}
+<<<<<<< HEAD
     	if(key == KeyEvent.VK_UP) {
     		if(yUser == 0){
     			yUser = 0;
@@ -191,7 +239,36 @@ public class Screen2 extends JPanel implements  ActionListener, KeyListener {
     		else if(labyrinth[(yUser/CELL_SIZE)+1][xUser/CELL_SIZE]){
     		yUser = yUser + CELL_SIZE;
     		}
+=======
+    	// Se a tecla apertada foi a seta para cima...
+    	if(key == KeyEvent.VK_UP) {
+    		//...e o limite superior for atingido, mantemos o boneco..
+    		if(y_bloco == 0){
+    			y_bloco = 0;
+    		}
+    		// ...do contrario, movemos o boneco para cima!
+    		else{
+    		y_bloco = y_bloco - CELL_SIZE;
+    		}
+    		// ...e redesenhamos a tela.
     		repaint();
+
+    	}
+    	// Se a tecla apertada foi a seta para baixo...
+    	if(key == KeyEvent.VK_DOWN) {
+    		//...e o limite inferior for atingido, mantemos o boneco..
+    		if(y_bloco == 450){
+    			y_bloco = 450;
+    		}
+    		// ...do contrario, movemos o boneco para baixo!
+    		else{
+    		y_bloco = y_bloco + 25;
+    		}
+    		// ...e redesenhamos a tela.
+>>>>>>> 37d5f2172c7f29a468c49a1c2d2f0085a980db9d
+    		repaint();
+    		System.out.println("y_bloco: " + y_bloco);
+    		System.out.println("yLimiteDown: " + yLimiteDown);
     	}
 	}
 
